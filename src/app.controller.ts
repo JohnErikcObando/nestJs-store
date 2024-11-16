@@ -14,4 +14,9 @@ export class AppController {
   newEndPoint() {
     return 'yo soy nuevo';
   }
+
+  @Get('tasks')
+  tasks() {
+    return this.appService.getTasks();
+  }
 }

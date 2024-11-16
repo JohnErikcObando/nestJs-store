@@ -19,7 +19,11 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 import { Response } from 'express';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
+import {
+  CreateProductDto,
+  FilterProductsDTO,
+  UpdateProductDto,
+} from '../dtos/products.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -28,56 +32,49 @@ export class ProductsController {
 
   @Get('')
   @ApiOperation({ summary: 'Lista de productos' })
-  getProducts(
-    @Query('limit') limit: number = 100,
-    @Query('offset') offset: number = 0,
-    @Query('brand') brand: string,
-  ) {
-    // return {
-    //   message: `product: limit=>${limit} offset=>${offset} brand=>${brand}`,
-    // };
-
-    return this.productsService.findAll();
+  getProducts(@Query() params: FilterProductsDTO) {
+    return this.productsService.findAll(params);
   }
 
   @Get('filter')
-  getProductFilter(@Param('id') id: string) {
+  getProductFilter(@Param('id') id: number) {
     return { message: `yo soy un filter` };
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.ACCEPTED)
-  // getOne(@Res() response: Response, @Param('id') productId: string) {
-  // response.status(200).send({
-  //   message: `product ${productId}`,
-  // });
   getOne(@Param('id', ParseIntPipe) productId: number) {
     return this.productsService.findOne(+productId);
   }
 
   @Post()
   crete(@Body() payload: CreateProductDto) {
-    // return {
-    //   message: 'accion de crear',
-    //   payload,
-    // };
-
     return this.productsService.create(payload);
   }
 
   @Put(':id')
   update(@Param('id') id: number, @Body() payload: UpdateProductDto) {
-    // return {
-    //   message: 'actualizando producto',
-    //   id,
-    //   payload,
-    // };
-
     return this.productsService.update(+id, payload);
   }
 
+  @Put(':id/category/:categoryId')
+  addCategoryByProduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ) {
+    return this.productsService.addCategoryByProduct(+id, categoryId);
+  }
+
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  delete(@Param('id') id: number) {
     return this.productsService.remove(+id);
+  }
+
+  @Delete(':id/category/:categoryId')
+  deleteCategory(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ) {
+    return this.productsService.removeCategoryByProduct(id, categoryId);
   }
 }
