@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { firstValueFrom } from 'rxjs';
 
 import { enviroments } from './enviroments';
+import { AuthModule } from './auth/auth.module';
 
 import config from './config';
 
@@ -21,7 +22,8 @@ import config from './config';
       load: [config],
       isGlobal: true,
       validationSchema: Joi.object({
-        API_KEY: Joi.number().required(),
+        API_KEY: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
         DATABASE_NAME: Joi.string().required(),
         DATABASE_PORT: Joi.number().required(),
       }),
@@ -30,6 +32,7 @@ import config from './config';
     HttpModule,
     ProductsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

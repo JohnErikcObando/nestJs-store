@@ -7,29 +7,33 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Post,
   Put,
   Query,
-  Res,
+  UseGuards,
 } from '@nestjs/common';
 
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-import { Response } from 'express';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
 import {
   CreateProductDto,
   FilterProductsDTO,
   UpdateProductDto,
 } from '../dtos/products.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/models/roles.model';
 
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
+  @Public()
   @Get('')
   @ApiOperation({ summary: 'Lista de productos' })
   getProducts(@Query() params: FilterProductsDTO) {
@@ -47,6 +51,7 @@ export class ProductsController {
     return this.productsService.findOne(+productId);
   }
 
+  @Roles(Role.ADMIN)
   @Post()
   crete(@Body() payload: CreateProductDto) {
     return this.productsService.create(payload);

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { Customer } from './customer.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -19,6 +20,7 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   email: string;
 
+  @Exclude()  //escluir campo para mostrar
   @Column({ type: 'varchar', length: 255 })
   password: string; // encript
 
@@ -38,6 +40,6 @@ export class User {
   updateAt: Date;
 
   @OneToOne(() => Customer, (customer) => customer.user, { nullable: true })
-  @JoinColumn({ name:'customer_id'})
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 }
